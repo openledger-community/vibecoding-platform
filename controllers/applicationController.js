@@ -1,5 +1,5 @@
 import Application from '../models/Application.js';
-import v0Service from '../services/v0Service.js';
+import { createOpenVibcodSDK } from 'open-vibcod-sdk';
 
 /**
  * Get all applications for a wallet address
@@ -183,9 +183,10 @@ export const createApplication = async (req, res) => {
       });
     }
 
-    // Step 1: Create project on V0
-    console.log('Creating V0 project...');
-    const projectResult = await v0Service.createProject({
+    // Step 1: Create project
+    console.log('Creating project...');
+    const sdk = createOpenVibcodSDK();
+    const projectResult = await sdk.createProject({
       name: name,
       designSystemId: design_system_id,
       description: description || '',
@@ -193,7 +194,7 @@ export const createApplication = async (req, res) => {
     });
 
     if (!projectResult.success || !projectResult.data?.id) {
-      throw new Error('Failed to create V0 project');
+      throw new Error('Failed to create project');
     }
 
     const projectId = projectResult.data.id;
@@ -208,7 +209,7 @@ export const createApplication = async (req, res) => {
     }
 
     console.log('Initializing chat with repository...');
-    chatInitResult = await v0Service.initChat({
+    chatInitResult = await sdk.initChat({
       projectId: projectId,
       type: 'repo',
       repo: {
@@ -249,7 +250,7 @@ ${user_prompt}`;
 
     // Send message without streaming (useStream = false)
     try {
-      await v0Service.sendChatMessage(chatId, combinedPrompt, false);
+      await sdk.sendChatMessage(chatId, combinedPrompt, false);
       console.log('✅ Prompt sent successfully - generation started');
     } catch (error) {
       console.warn('⚠️ Failed to send prompt:', error.message);

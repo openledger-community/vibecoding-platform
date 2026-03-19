@@ -1,4 +1,4 @@
-import v0Service from '../services/v0Service.js';
+import { createOpenVibcodSDK } from 'open-vibcod-sdk';
 import Application from '../models/Application.js';
 
 /**
@@ -36,9 +36,10 @@ export const sendChatMessage = async (req, res) => {
       });
     }
 
-    // Send message to V0 chat
+    // Initialize SDK and send message to chat
     console.log(`Sending message to chat ${chat_id}...`);
-    const result = await v0Service.sendChatMessage(
+    const sdk = createOpenVibcodSDK();
+    const result = await sdk.sendChatMessage(
       chat_id,
       prompt
     );
@@ -107,9 +108,10 @@ export const getChatHistory = async (req, res) => {
       });
     }
 
-    // Fetch chat history from V0
+    // Initialize SDK and fetch chat history from chat
     console.log(`Fetching chat history for chat ${chat_id}...`);
-    const result = await v0Service.getChatHistory(chat_id);
+    const sdk = createOpenVibcodSDK();
+    const result = await sdk.getChatHistory(chat_id);
 
     if (!result.success) {
       throw new Error('Failed to fetch chat history');
